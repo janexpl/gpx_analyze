@@ -152,6 +152,7 @@ dependencies = [
 name = "gpx_analyze"
 version = "0.1.0"
 dependencies = [
+ "chrono",
  "clap",
  "geo-types",
  "gpx",

@@ -1,10 +1,12 @@
+extern crate chrono;
 extern crate clap;
 extern crate geo_types;
 extern crate gpx;
+use chrono::{DateTime, Duration, Utc};
 use clap::{App, Arg};
 use geo_types::Point;
 use gpx::read;
-use gpx::{Gpx, Track, TrackSegment};
+use gpx::{Gpx, Track, TrackSegment, Waypoint};
 use std::fs::File;
 use std::io::BufReader;
 #[derive(Debug)]
@@ -83,7 +85,7 @@ impl GpxFile {
             segment: gpx.tracks[0].segments[0].clone(),
         }
     }
-    fn length_2D(&self) -> f64 {
+    fn length_2d(&self) -> f64 {
         let mut last_point: Point<f64> = (0.0, 0.0).into();
         let mut i: u64 = 0;
         let mut dist: f64 = 0.00;
@@ -110,6 +112,34 @@ impl GpxFile {
 
         let c = 2.00 * a.sqrt().atan2((1.00 - a).sqrt());
         r * c * 1000.00
+    }
+    fn duration(&self) -> Duration {
+        let mut last_point: Waypoint = Waypoint::new(Point::new(0.0, 0.0));
+        let mut i: u64 = 0;
+        let mut duration: Duration = Duration::zero();
+        for segs in self.segment.points.iter() {
+            if i != 0 {
+                duration = duration + self.time(&last_point, segs);
+            }
+            last_point = segs.clone();
+            i = i + 1;
+        }
+        duration
+    }
+
+    fn time(&self, point1: &Waypoint, point2: &Waypoint) -> Duration {
+        let time1: Option<DateTime<Utc>> = point1.time;
+        let time2: Option<DateTime<Utc>> = point2.time;
+        let time1 = match time1 {
+            Some(a) => a,
+            None => panic!("Nie ma znacznika czasu"),
+        };
+        let time2 = match time2 {
+            Some(a) => a,
+            None => panic!("Nie ma znacznika czasu"),
+        };
+        let duration: Duration = time2.signed_duration_since(time1);
+        duration
     }
 }
 fn main() {
@@ -145,7 +175,8 @@ fn main() {
     let gpx_file1 = GpxFile::new(&gpx_source);
     let gpx_file2 = GpxFile::new(&gpx_client);
     let gpx_compare = GpxFiles::new(&gpx_file1, &gpx_file2, 0.8, 0.0001);
-    println!("Distance 1: {}", gpx_file1.length_2D());
-    println!("Distance 2: {}", gpx_file2.length_2D());
+    println!("Distance 1: {}", gpx_file1.length_2d());
+    println!("Distance 2: {}", gpx_file2.length_2d());
+    println!("Duration: {:?}", gpx_file2.duration());
     gpx_compare.compare();
 }

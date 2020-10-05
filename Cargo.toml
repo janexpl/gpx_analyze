@@ -10,6 +10,7 @@ edition = "2018"
 gpx = "0.8.1"
 geo-types = "0.6"
 clap = "2.33.0"
+chrono = "0.4.19"
 
 [patch.crates-io]
 gpx = { git = 'https://github.com/janexpl/gpx' }
