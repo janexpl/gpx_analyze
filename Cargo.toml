@@ -1,0 +1,15 @@
+[package]
+name = "gpx_analyze"
+version = "0.1.0"
+authors = ["janusz <janexpl@me.com>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+gpx = "0.8.1"
+geo-types = "0.6"
+clap = "2.33.0"
+
+[patch.crates-io]
+gpx = { git = 'https://github.com/janexpl/gpx' }
