@@ -174,7 +174,7 @@ fn main() {
     let gpx_client: Gpx = read(reader_client).unwrap();
     let gpx_file1 = GpxFile::new(&gpx_source);
     let gpx_file2 = GpxFile::new(&gpx_client);
-    let gpx_compare = GpxFiles::new(&gpx_file1, &gpx_file2, 0.8, 0.0001);
+    let gpx_compare = GpxFiles::new(&gpx_file1, &gpx_file2, 0.9, 0.0001);
     println!("Distance 1: {}", gpx_file1.length_2d());
     println!("Distance 2: {}", gpx_file2.length_2d());
     println!("Duration: {:?}", gpx_file2.duration());
