@@ -1,4 +1,5 @@
 use crate::gpxfile::*;
+use crate::gpxsource::*;
 use geo_types::Point;
 use gpx::{Gpx, Route, Track, TrackSegment, Waypoint};
 
@@ -125,7 +126,7 @@ impl<'a> GpxFiles<'a> {
             waypoints: waypoints,
             routes: routes,
         };
-        let gpx_file = GpxFile::new(&gpxf);
+        let gpx_file: GpxFile = GpxFile::new(&gpxf);
         gpx_file
     }
 }
