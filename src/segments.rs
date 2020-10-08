@@ -59,6 +59,6 @@ impl GpxSource<TrackSegment, Segment> for Segment {
         duration.num_seconds()
     }
     fn points(&self) -> Vec<Waypoint> {
-        self.points()
+        self.segment.points.clone()
     }
 }

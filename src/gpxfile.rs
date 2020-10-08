@@ -60,6 +60,6 @@ impl GpxSource<Gpx, GpxFile> for GpxFile {
             println!("{:?}", p);
             points.append(&mut p);
         }
-        points
+        points.clone()
     }
 }
