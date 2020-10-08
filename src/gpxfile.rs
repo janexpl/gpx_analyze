@@ -4,7 +4,7 @@ extern crate geo_types;
 extern crate gpx;
 use crate::{gpxsource::*, segments::*};
 
-use gpx::Gpx;
+use gpx::{Gpx, Waypoint};
 #[derive(Debug)]
 pub struct GpxFile {
     pub gpx: Gpx,
@@ -51,5 +51,14 @@ impl GpxSource<Gpx, GpxFile> for GpxFile {
             duration = duration + s.duration();
         }
         duration
+    }
+    fn points(&self) -> Vec<Waypoint> {
+        let mut points: Vec<Waypoint> = Vec::new();
+        for seg in self.gpx.tracks[0].segments.iter() {
+            let s = Segment::new(seg);
+            let p = s.points();
+            points.append(&mut p);
+        }
+        points
     }
 }

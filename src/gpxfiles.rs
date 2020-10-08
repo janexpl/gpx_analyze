@@ -57,12 +57,12 @@ impl<'a> GpxFiles<'a> {
         let mut end_point: Point<f64> = (0.00, 0.00).into();
         let mut success_points: u64 = 0;
 
-        for (i, pt1) in self.file1.segment.points.iter().enumerate() {
+        for (i, pt1) in self.file1.points().iter().enumerate() {
             let lat_source = pt1.point().lat();
             let lon_source = pt1.point().lng();
             //let mut j: u64 = 1;
 
-            for (j, pt2) in self.file2.segment.points.iter().enumerate() {
+            for (j, pt2) in self.file2.points().iter().enumerate() {
                 if j as u64 > found_point {
                     let lat_client = pt2.point().lat();
                     let lon_client = pt2.point().lng();
@@ -76,7 +76,7 @@ impl<'a> GpxFiles<'a> {
                         if i == 0 {
                             start_point = pt2.point();
                         }
-                        if i == self.file1.segment.points.len() - 1 {
+                        if i == self.file1.points().len() - 1 {
                             end_point = pt2.point();
                         }
                         success_points = success_points + 1;
@@ -91,7 +91,7 @@ impl<'a> GpxFiles<'a> {
             }
         }
 
-        if self.file1.segment.points.len() as f64 * self.percent <= success_points as f64 {
+        if self.file1.points().len() as f64 * self.percent <= success_points as f64 {
             None
         } else {
             Some((start_point, end_point))
@@ -101,7 +101,7 @@ impl<'a> GpxFiles<'a> {
         let mut extract: bool = false;
         let mut track = Track::new();
         let mut segment: TrackSegment = TrackSegment::new();
-        for seg in self.file2.segment.points.iter() {
+        for seg in self.file2.points().iter() {
             // println!("{:?} {:?} {:?}", seg.point(), start_point, end_point);
 
             if seg.point().eq(&start_point) {

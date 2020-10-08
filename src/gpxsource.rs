@@ -6,6 +6,7 @@ pub trait GpxSource<T, U> {
     fn length_2d(&self) -> f64;
     fn uphill_downhill(&self) -> (f64, f64);
     fn duration(&self) -> i64;
+    fn points(&self) -> Vec<Waypoint>;
     fn height_difference(&self, point1: &Waypoint, point2: &Waypoint) -> f64 {
         let height1 = point1.elevation.unwrap();
         let height2 = point2.elevation.unwrap();
