@@ -12,7 +12,8 @@ pub struct GpxFiles<'a> {
     step: f64,
     iterations: u32,
 }
-
+#[derive(Debug)]
+pub struct FitError;
 impl<'a> GpxFiles<'a> {
     pub fn new(
         file1: &'a GpxFile,
@@ -31,25 +32,35 @@ impl<'a> GpxFiles<'a> {
             iterations,
         }
     }
-    pub fn best_fit(&mut self) -> GpxFile {
-        let mut length: f64 = 0.00;
+
+    pub fn best_fit(&mut self) -> Result<GpxFile, FitError> {
+        let mut lght: f64 = 0.00;
         let mut fitted_gpx: GpxFile = GpxFile::new(&self.file2.gpx);
+        let mut fitted: u64 = 0;
         for _ in 0..self.iterations {
             let result = self.compare();
+
             match result {
                 Some((a, b)) => {
                     let new_gpx = self.extract_gpx(a, b);
                     let new_length = new_gpx.length_2d();
-                    if new_length > length {
-                        length = new_length;
+                    if lght > new_length {
+                        lght = new_length;
                         fitted_gpx = new_gpx;
                     }
+                    fitted = fitted + 1;
                     self.tolerance = self.tolerance + self.step;
                 }
-                None => {}
+                None => {
+                    self.tolerance = self.tolerance + self.step;
+                }
             }
         }
-        fitted_gpx
+        if fitted == 0 {
+            Err(FitError)
+        } else {
+            Ok(fitted_gpx)
+        }
     }
     fn compare(&self) -> Option<(Point<f64>, Point<f64>)> {
         let mut found_point: u64 = 0;
@@ -91,7 +102,7 @@ impl<'a> GpxFiles<'a> {
             }
         }
 
-        if self.file1.points().len() as f64 * self.percent <= success_points as f64 {
+        if self.file1.points().len() as f64 * self.percent >= success_points as f64 {
             None
         } else {
             Some((start_point, end_point))

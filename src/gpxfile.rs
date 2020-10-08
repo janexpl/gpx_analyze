@@ -9,27 +9,26 @@ use gpx::{Gpx, Waypoint};
 pub struct GpxFile {
     pub gpx: Gpx,
     // pub track: Track,
-    // pub segments: Vec<Segment>,
+    pub segments: Vec<Segment>,
 }
 
 impl GpxSource<Gpx, GpxFile> for GpxFile {
     fn new(gpx: &Gpx) -> GpxFile {
-        // let mut segs: Vec<Segment> = Vec::new();
-        // for segment in gpx.tracks[0].segments.iter() {
-        //     let s = Segment::new(&segment);
-        //     segs.push(s);
-        // }
+        let mut segs: Vec<Segment> = Vec::new();
+        for segment in gpx.tracks[0].segments.iter() {
+            let s = Segment::new(&segment);
+            segs.push(s);
+        }
         GpxFile {
             gpx: gpx.clone(),
             // track: gpx.tracks[0].clone(),
-            // segments: segs,
+            segments: segs,
         }
     }
     fn length_2d(&self) -> f64 {
         let mut length: f64 = 0.00;
-        for seg in self.gpx.tracks[0].segments.iter() {
-            let s = Segment::new(seg);
-            length = length + s.length_2d();
+        for seg in self.segments.iter() {
+            length = length + seg.length_2d();
         }
         length
     }
@@ -54,10 +53,8 @@ impl GpxSource<Gpx, GpxFile> for GpxFile {
     }
     fn points(&self) -> Vec<Waypoint> {
         let mut points: Vec<Waypoint> = Vec::new();
-        for seg in self.gpx.tracks[0].segments.iter() {
-            let s = Segment::new(seg);
-            let mut p = s.points();
-            println!("{:?}", p);
+        for seg in self.segments.iter() {
+            let mut p = seg.points();
             points.append(&mut p);
         }
         points.clone()
