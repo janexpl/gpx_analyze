@@ -45,7 +45,7 @@ impl GpxSource<Gpx, GpxFile> for GpxFile {
         (uphill, downhill)
     }
     fn duration(&self) -> i64 {
-        let mut duration: i64;
+        let mut duration: i64 = 0;
         for seg in self.gpx.tracks[0].segments.iter() {
             let s = Segment::new(seg);
             duration = duration + s.duration();
@@ -56,7 +56,7 @@ impl GpxSource<Gpx, GpxFile> for GpxFile {
         let mut points: Vec<Waypoint> = Vec::new();
         for seg in self.gpx.tracks[0].segments.iter() {
             let s = Segment::new(seg);
-            let p = s.points();
+            let mut p = s.points();
             points.append(&mut p);
         }
         points
