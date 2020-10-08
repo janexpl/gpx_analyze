@@ -57,6 +57,7 @@ impl GpxSource<Gpx, GpxFile> for GpxFile {
         for seg in self.gpx.tracks[0].segments.iter() {
             let s = Segment::new(seg);
             let mut p = s.points();
+            println!("{:?}", p);
             points.append(&mut p);
         }
         points
