@@ -8,7 +8,7 @@ pub struct GpxFiles<'a> {
     file1: &'a GpxFile,
     file2: &'a GpxFile,
     percent: f64,
-    pub tolerance: f64,
+    tolerance: f64,
     step: f64,
     iterations: u32,
 }
@@ -37,6 +37,7 @@ impl<'a> GpxFiles<'a> {
         let mut lght: f64 = 0.00;
         let mut fitted_gpx: GpxFile = GpxFile::new(&self.file2.gpx);
         let mut fitted: u64 = 0;
+
         for _ in 0..self.iterations {
             let result = self.compare();
 
@@ -49,6 +50,7 @@ impl<'a> GpxFiles<'a> {
                         fitted_gpx = new_gpx;
                     }
                     fitted = fitted + 1;
+
                     self.tolerance = self.tolerance + self.step;
                 }
                 None => {
@@ -68,12 +70,11 @@ impl<'a> GpxFiles<'a> {
         let mut end_point: Point<f64> = (0.00, 0.00).into();
         let mut success_points: u64 = 0;
 
-        for (i, pt1) in self.file1.points().iter().enumerate() {
+        for (i, pt1) in self.file1.points.iter().enumerate() {
             let lat_source = pt1.point().lat();
             let lon_source = pt1.point().lng();
-            //let mut j: u64 = 1;
 
-            for (j, pt2) in self.file2.points().iter().enumerate() {
+            for (j, pt2) in self.file2.points.iter().enumerate() {
                 if j as u64 > found_point {
                     let lat_client = pt2.point().lat();
                     let lon_client = pt2.point().lng();
@@ -84,18 +85,14 @@ impl<'a> GpxFiles<'a> {
                     if diff_lat * diff_lat + diff_lon * diff_lon <= self.tolerance * self.tolerance
                     {
                         found_point = j as u64;
+
                         if i == 0 {
                             start_point = pt2.point();
                         }
-                        if i == self.file1.points().len() - 1 {
+                        if i == self.file1.points.len() - 1 {
                             end_point = pt2.point();
                         }
                         success_points = success_points + 1;
-                        // println!("Found point: {}", found_point);
-                        // println!(
-                        //     "Source: {}:{}, Client: {}:{}",
-                        //     lat_source, lon_source, lat_client, lon_client
-                        // );
                         break;
                     }
                 }
@@ -112,7 +109,7 @@ impl<'a> GpxFiles<'a> {
         let mut extract: bool = false;
         let mut track = Track::new();
         let mut segment: TrackSegment = TrackSegment::new();
-        for seg in self.file2.points().iter() {
+        for seg in self.file2.points.iter() {
             // println!("{:?} {:?} {:?}", seg.point(), start_point, end_point);
 
             if seg.point().eq(&start_point) {

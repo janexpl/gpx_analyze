@@ -10,19 +10,27 @@ pub struct GpxFile {
     pub gpx: Gpx,
     // pub track: Track,
     pub segments: Vec<Segment>,
+    pub points: Vec<Waypoint>,
 }
 
 impl GpxSource<Gpx, GpxFile> for GpxFile {
     fn new(gpx: &Gpx) -> GpxFile {
         let mut segs: Vec<Segment> = Vec::new();
+        let mut pt: Vec<Waypoint> = Vec::new();
         for segment in gpx.tracks[0].segments.iter() {
             let s = Segment::new(&segment);
             segs.push(s);
         }
+        for point in segs.iter() {
+            let mut p = point.points();
+            pt.append(&mut p);
+        }
+
         GpxFile {
             gpx: gpx.clone(),
             // track: gpx.tracks[0].clone(),
             segments: segs,
+            points: pt,
         }
     }
     fn length_2d(&self) -> f64 {
