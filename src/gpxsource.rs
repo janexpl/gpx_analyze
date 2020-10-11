@@ -4,6 +4,7 @@ use gpx::Waypoint;
 pub trait GpxSource<T, U> {
     fn new(_: &T) -> U;
     fn length_2d(&self) -> f64;
+    fn length_3d(&self) -> f64;
     fn uphill_downhill(&self) -> (f64, f64);
     fn duration(&self) -> i64;
     fn points(&self) -> Vec<Waypoint>;

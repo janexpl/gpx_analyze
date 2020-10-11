@@ -67,4 +67,12 @@ impl GpxSource<Gpx, GpxFile> for GpxFile {
         }
         points.clone()
     }
+
+    fn length_3d(&self) -> f64 {
+        let mut length: f64 = 0.00;
+        for seg in self.segments.iter() {
+            length = length + seg.length_3d();
+        }
+        length
+    }
 }

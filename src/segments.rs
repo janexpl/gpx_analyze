@@ -61,4 +61,19 @@ impl GpxSource<TrackSegment, Segment> for Segment {
     fn points(&self) -> Vec<Waypoint> {
         self.segment.points.clone()
     }
+
+    fn length_3d(&self) -> f64 {
+        let mut last_point: &Waypoint = &Waypoint::new(Point::new(0.0, 0.0));
+
+        let mut dist3d: f64 = 0.00;
+        for (i, segs) in self.segment.points.iter().enumerate() {
+            if i != 0 {
+                let dist = self.distance(last_point.point(), segs.point());
+                let ele_diff = self.height_difference(last_point, segs);
+                dist3d = dist3d + (dist * dist + ele_diff * ele_diff).sqrt();
+            }
+            last_point = segs;
+        }
+        dist3d
+    }
 }
