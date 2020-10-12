@@ -1,6 +1,21 @@
+use std::fmt;
+
 use chrono::{DateTime, Duration, Utc};
 use geo_types::Point;
 use gpx::Waypoint;
+pub struct TimeError;
+impl fmt::Display for TimeError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "Unable to parse datetime") // user-facing output
+    }
+}
+
+// Implement std::fmt::Debug for TimeError
+impl fmt::Debug for TimeError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{{ file: {}, line: {} }}", file!(), line!()) // programmer-facing output
+    }
+}
 pub trait GpxSource<T, U> {
     fn new(_: &T) -> U;
     fn length_2d(&self) -> f64;
@@ -14,19 +29,19 @@ pub trait GpxSource<T, U> {
         let height2 = point2.elevation.unwrap();
         height2 - height1
     }
-    fn time(&self, point1: &Waypoint, point2: &Waypoint) -> Duration {
+    fn time(&self, point1: &Waypoint, point2: &Waypoint) -> Result<Duration, TimeError> {
         let time1: Option<DateTime<Utc>> = point1.time;
         let time2: Option<DateTime<Utc>> = point2.time;
         let time1 = match time1 {
             Some(a) => a,
-            None => panic!("Nie ma znacznika czasu"),
+            None => return Err(TimeError),
         };
         let time2 = match time2 {
             Some(a) => a,
-            None => panic!("Nie ma znacznika czasu"),
+            None => return Err(TimeError),
         };
         let duration: Duration = time2.signed_duration_since(time1);
-        duration
+        Ok(duration)
     }
     fn averge_speed(&self) -> f64 {
         let distance = self.length_3d();
@@ -34,7 +49,7 @@ pub trait GpxSource<T, U> {
         distance / time
     }
     fn speed_between(&self, point1: &Waypoint, point2: &Waypoint) -> f64 {
-        let time = self.time(point1, point2);
+        let time = self.time(point1, point2).unwrap();
         let distance = self.distance(point1.point(), point2.point());
         let speed = distance / time.num_seconds() as f64;
         speed

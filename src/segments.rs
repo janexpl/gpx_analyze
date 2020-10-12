@@ -52,7 +52,10 @@ impl GpxSource<TrackSegment, Segment> for Segment {
         let mut duration: Duration = Duration::zero();
         for (i, segs) in self.segment.points.iter().enumerate() {
             if i != 0 {
-                duration = duration + self.time(&last_point, segs);
+                match self.time(&last_point, segs) {
+                    Ok(a) => duration = duration + a,
+                    Err(_) => return 0,
+                };
             }
             last_point = segs.clone();
         }
