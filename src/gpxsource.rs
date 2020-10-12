@@ -7,6 +7,7 @@ pub trait GpxSource<T, U> {
     fn length_3d(&self) -> f64;
     fn uphill_downhill(&self) -> (f64, f64);
     fn duration(&self) -> i64;
+    fn max_speed(&self) -> f64;
     fn points(&self) -> Vec<Waypoint>;
     fn height_difference(&self, point1: &Waypoint, point2: &Waypoint) -> f64 {
         let height1 = point1.elevation.unwrap();
@@ -26,6 +27,17 @@ pub trait GpxSource<T, U> {
         };
         let duration: Duration = time2.signed_duration_since(time1);
         duration
+    }
+    fn averge_speed(&self) -> f64 {
+        let distance = self.length_3d();
+        let time = self.duration() as f64;
+        distance / time
+    }
+    fn speed_between(&self, point1: &Waypoint, point2: &Waypoint) -> f64 {
+        let time = self.time(point1, point2);
+        let distance = self.distance(point1.point(), point2.point());
+        let speed = distance / time.num_seconds() as f64;
+        speed
     }
     fn distance(&self, point1: Point<f64>, point2: Point<f64>) -> f64 {
         let r: f64 = 6371.00;

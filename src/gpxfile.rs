@@ -75,4 +75,8 @@ impl GpxSource<Gpx, GpxFile> for GpxFile {
         }
         length
     }
+
+    fn max_speed(&self) -> f64 {
+        todo!()
+    }
 }

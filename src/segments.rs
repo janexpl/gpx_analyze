@@ -63,7 +63,7 @@ impl GpxSource<TrackSegment, Segment> for Segment {
     }
 
     fn length_3d(&self) -> f64 {
-        let mut last_point: &Waypoint = &Waypoint::new(Point::new(0.0, 0.0));
+        let mut last_point: &Waypoint = &&Waypoint::new(Point::new(0.0, 0.0));
 
         let mut dist3d: f64 = 0.00;
         for (i, segs) in self.segment.points.iter().enumerate() {
@@ -75,5 +75,9 @@ impl GpxSource<TrackSegment, Segment> for Segment {
             last_point = segs;
         }
         dist3d
+    }
+
+    fn max_speed(&self) -> f64 {
+        todo!()
     }
 }
